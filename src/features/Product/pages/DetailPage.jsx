@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Container, Grid, Paper, makeStyles, Box, LinearProgress } from '@material-ui/core';
 import ProductThumbnail from '../components/ProductThumbnail';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import useProductDetail from '../hooks/useProductDetail'
+import useProductDetail from '../hooks/useProductDetail';
 import ProductInfo from '../components/ProductInfo';
 import AddToCartForm from '../components/AddToCartForm';
 import ProductMenu from '../components/ProductMenu';
@@ -13,18 +13,16 @@ import ProductReviews from '../components/ProductReviews';
 import { useDispatch } from 'react-redux';
 import { addToCart } from 'features/Cart/CartSlice';
 
-DetailPage.propTypes = {
-    
-};
+DetailPage.propTypes = {};
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
-        paddingBottom: theme.spacing(3)
+        paddingBottom: theme.spacing(3),
     },
     left: {
         width: '400px',
         padding: theme.spacing(1.5),
-        borderRight: `1px solid ${theme.palette.grey[400]}`
+        borderRight: `1px solid ${theme.palette.grey[400]}`,
     },
     right: {
         flex: '1 1 0',
@@ -34,7 +32,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'center',
         marginTop: '30px',
-        paddingBottom: '20px', 
+        paddingBottom: '20px',
     },
     loading: {
         position: 'fixed',
@@ -42,29 +40,36 @@ const useStyles = makeStyles(theme => ({
         left: 0,
         width: '100%',
     },
-}))
+}));
 
 function DetailPage(props) {
     const classes = useStyles();
-    const {params: { productId }, url} = useRouteMatch();
+    const {
+        params: { productId },
+        url,
+    } = useRouteMatch();
     const dispatch = useDispatch();
-    
+
     const { product, loading } = useProductDetail(productId);
 
-    if(loading) {
-        return <Box className={classes.loading}>
-            <LinearProgress />
-        </Box>
+    if (loading) {
+        return (
+            <Box className={classes.loading}>
+                <LinearProgress />
+            </Box>
+        );
     }
 
     const handleAddToCartSubmit = ({ quantity }) => {
-        dispatch(addToCart({
-            id: product.id,
-            product,
-            quantity,
-        }))
-    }
-    
+        dispatch(
+            addToCart({
+                id: product.id,
+                product,
+                quantity,
+            })
+        );
+    };
+
     return (
         <Container>
             <Paper elevation={0}>

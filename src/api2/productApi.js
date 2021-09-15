@@ -1,6 +1,6 @@
-import axiosClient from './axiosClient';
+import axiosClient2 from 'api2/axiosClient';
 
-const productApi = {
+const productApi2 = {
     async getAll(params) {
         // Transform _page to _start
         const newParams = { ...params };
@@ -11,8 +11,8 @@ const productApi = {
         // Remove un-needed key
         delete newParams._page;
         // Fetch product list + count
-        const productList = await axiosClient.get('/products', { params: newParams });
-        const count = await axiosClient.get('/products/count', { params: newParams });
+        const productList = await axiosClient2.get('/products', { params: newParams });
+        const count = await axiosClient2.get('/products/count', { params: newParams });
         // Build response and return
         return {
             data: productList,
@@ -23,26 +23,25 @@ const productApi = {
             },
         };
     },
-
     get(id) {
         const url = `/products/${id}`;
-        return axiosClient.get(url);
+        return axiosClient2.get(url);
     },
 
     add(data) {
         const url = '/products';
-        return axiosClient.post(url, data);
+        return axiosClient2.post(url, data);
     },
 
     update(data) {
         const url = `/products/${data.id}`;
-        return axiosClient.patch(url, data);
+        return axiosClient2.patch(url, data);
     },
 
     remove(id) {
         const url = `/products/${id}`;
-        return axiosClient.delete(url);
+        return axiosClient2.delete(url);
     },
 };
 
-export default productApi;
+export default productApi2;

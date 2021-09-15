@@ -1,58 +1,63 @@
-import { Badge, Box, IconButton, Menu, MenuItem } from '@material-ui/core';
+import { Badge, Box, Menu, MenuItem } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { AccountCircle, Close, ShoppingCart } from '@material-ui/icons';
-import CodeIcon from '@material-ui/icons/Code';
-import Login from 'features/Auth/components/Login';
-import Register from 'features/Auth/components/Register';
-import { logout } from 'features/Auth/userSlice';
-import { cartItemsCountSelector } from 'features/Cart/selectors';
+import { AccountCircle, CodeOutlined } from '@material-ui/icons';
+import CloseIcon from '@material-ui/icons/Close';
+import Login2 from 'features/Auth2/components/Login';
+import Register2 from 'features/Auth2/components/Register';
+import { logout } from 'features/Auth2/userSlice2';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useHistory } from 'react-router-dom';
-
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import { cartItemsCountSelector } from 'features/Cart2/selectors';
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+        position: 'fixed',
+        left: 0,
+        bottom: 0,
+        right: 0,
     },
     menuButton: {
         marginRight: theme.spacing(2),
     },
     title: {
         flexGrow: 1,
+        marginLeft: '1rem',
     },
     link: {
-        color: '#fff',
         textDecoration: 'none',
+        color: '#fff',
     },
     closeButton: {
         position: 'absolute',
-        top: theme.spacing(1),
-        right: theme.spacing(1),
-        zIndex: 1,
-        color: theme.palette.grey[500],
+        top: '.75rem',
+        right: '1rem',
+        zIndex: 2,
     },
 }));
 
-const NODE = {
-    LOGIN: 'login',
+const MODE = {
     REGISTER: 'register',
+    LOGIN: 'login',
 };
 
-export default function Header() {
-    const dispatch = useDispatch();
-    const loggedInUser = useSelector((state) => state.user.current);
-    const cartItemsCount = useSelector(cartItemsCountSelector);
+export default function Footer() {
+    const classes = useStyles();
     const history = useHistory();
-    const isLoggedIn = !!loggedInUser.id;
+    const dispatch = useDispatch();
+    const [mode, setMode] = useState(MODE.LOGIN);
     const [open, setOpen] = useState(false);
-    const [mode, setMode] = useState(NODE.LOGIN);
     const [anchorEl, setAnchorEl] = useState(null);
+    const loggedInUser = useSelector((state) => state.user2.current);
+    const isLoggedIn = !!loggedInUser.id;
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -60,58 +65,53 @@ export default function Header() {
     const handleClose = () => {
         setOpen(false);
     };
-
     const handleUserClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
-
-    const handleCloseMenu = () => {
+    const handleUserClose = () => {
         setAnchorEl(null);
     };
 
-    const handleLogoutClick = () => {
-        const action = logout();
-        dispatch(action);
-    };
-    const handleCartClick = () => {
-        history.push('/cart');
+    const handleLogoutUser = () => {
+        dispatch(logout());
+        handleUserClose();
     };
 
-    const classes = useStyles();
+    const handleCartClick = () => {
+        history.push('/cartt');
+    };
+
+    const itemsCount = useSelector(cartItemsCountSelector);
 
     return (
         <div className={classes.root}>
             <AppBar position="static">
                 <Toolbar>
-                    <CodeIcon className={classes.menuButton} />
-                    <Typography variant="h6" className={classes.title}>
+                    <CodeOutlined />
+                    <Typography component="h3" variant="h5" className={classes.title}>
                         <Link className={classes.link} to="/">
-                            EZ SHOP
+                            EZ Shop
                         </Link>
                     </Typography>
+                    <NavLink className={classes.link} to="/albums">
+                        <Button color="inherit">Album</Button>
+                    </NavLink>
                     <NavLink className={classes.link} to="/todos">
                         <Button color="inherit">Todos</Button>
                     </NavLink>
-                    <NavLink className={classes.link} to="/albums">
-                        <Button color="inherit">Albums</Button>
+                    <NavLink className={classes.link} to="/productst">
+                        <Button color="inherit">Product</Button>
                     </NavLink>
-
                     {!isLoggedIn && (
                         <Button color="inherit" onClick={handleClickOpen}>
                             Login
                         </Button>
                     )}
-
-                    <IconButton
-                        aria-label="show 4 new mails"
-                        color="inherit"
-                        onClick={handleCartClick}
-                    >
-                        <Badge badgeContent={cartItemsCount} color="secondary">
-                            <ShoppingCart />
+                    <IconButton color="inherit" onClick={handleCartClick}>
+                        <Badge badgeContent={itemsCount} color="secondary">
+                            <ShoppingCartIcon />
                         </Badge>
                     </IconButton>
-
                     {isLoggedIn && (
                         <IconButton color="inherit" onClick={handleUserClick}>
                             <AccountCircle />
@@ -119,64 +119,62 @@ export default function Header() {
                     )}
                 </Toolbar>
             </AppBar>
-
             <Menu
                 anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                }}
-                transformOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
                 }}
-                getContentAnchorEl={null}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
                 id="simple-menu"
                 anchorEl={anchorEl}
                 keepMounted
                 open={Boolean(anchorEl)}
-                onClose={handleCloseMenu}
+                onClose={handleUserClose}
             >
-                <MenuItem onClick={handleCloseMenu}>My account</MenuItem>
-                <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+                <MenuItem onClick={handleUserClose}>My account</MenuItem>
+                <MenuItem onClick={handleLogoutUser}>Logout</MenuItem>
             </Menu>
-
             <Dialog
-                disableEscapeKeyDown
                 open={open}
-                onClose={handleClose}
                 onClose={(event, reason) => {
-                    if (reason !== 'backdropClick') {
-                        onclose(event, reason);
+                    if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                        handleClose();
                     }
                 }}
-                aria-labelledby="form-dialog-title"
             >
-                <IconButton className={classes.closeButton} onClick={handleClose}>
-                    <Close />
+                <IconButton onClick={handleClose} className={classes.closeButton}>
+                    <CloseIcon />
                 </IconButton>
-                <DialogContent>
-                    {mode === NODE.REGISTER && (
+                <DialogContent style={{ position: 'relative' }}>
+                    {mode === MODE.LOGIN && (
                         <>
-                            <Register closeDialog={handleClose} />
+                            <Login2 closeDialog={handleClose} />
                             <Box textAlign="center">
                                 <Button
                                     color="primary"
-                                    onClick={() => setMode(NODE.LOGIN)}
+                                    onClick={() => {
+                                        setMode(MODE.REGISTER);
+                                    }}
                                 >
-                                    Already have an account. Login here
+                                    Not Have An Account? Register Here
                                 </Button>
                             </Box>
                         </>
                     )}
-                    {mode === NODE.LOGIN && (
+                    {mode === MODE.REGISTER && (
                         <>
-                            <Login closeDialog={handleClose} />
+                            <Register2 closeDialog={handleClose} />
                             <Box textAlign="center">
                                 <Button
                                     color="primary"
-                                    onClick={() => setMode(NODE.REGISTER)}
+                                    onClick={() => {
+                                        setMode(MODE.LOGIN);
+                                    }}
                                 >
-                                    Don't have an account. Register here
+                                    Already An Account? Register Here
                                 </Button>
                             </Box>
                         </>

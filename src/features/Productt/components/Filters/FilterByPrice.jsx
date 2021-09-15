@@ -1,7 +1,6 @@
-import { Box, Button, TextField, Typography, makeStyles } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-
+import PropTypes from 'prop-types';
+import { Box, makeStyles, Typography, TextField, Button } from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
     root: {
         padding: theme.spacing(2),
@@ -19,18 +18,16 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-
 FilterByPrice.propTypes = {
     onChange: PropTypes.func,
 };
 
-function FilterByPrice({ onChange }) {
+function FilterByPrice({ onChange = null }) {
     const classes = useStyles();
     const [values, setValues] = useState({
         salePrice_gte: 0,
         salePrice_lte: 0,
     });
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setValues((prevValues) => ({
@@ -38,19 +35,12 @@ function FilterByPrice({ onChange }) {
             [name]: value,
         }));
     };
-
     const handleSubmit = () => {
         if (onChange) onChange(values);
-
-        setValues({
-            salePrice_gte: 0,
-            salePrice_lte: 0,
-        });
     };
     return (
         <Box className={classes.root}>
-            <Typography variant="subtitle2">Giá</Typography>
-
+            <Typography variant="subtitle2">Gia</Typography>
             <Box className={classes.range}>
                 <TextField
                     name="salePrice_gte"

@@ -18,25 +18,29 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+FilterViewer.propTypes = {
+    filters: PropTypes.object,
+    onChange: PropTypes.func,
+};
+
 const FILTER_LIST = [
     {
         id: 1,
-        getLabel: () => 'Giao Hang Mien Phi',
+        getLabel: () => 'Vận chuyển miễn phí',
         isActive: (filters) => filters.isFreeShip,
         isVisible: () => true,
         isRemovable: false,
         onRemove: () => {},
         onToggle: (filters) => {
             const newFilters = { ...filters };
-            if (newFilters.isFreeShip) delete newFilters.isFreeShip;
+            if (filters.isFreeShip) delete newFilters.isFreeShip;
             else newFilters.isFreeShip = true;
-
             return newFilters;
         },
     },
     {
         id: 2,
-        getLabel: () => 'Co Khuyen Mai',
+        getLabel: () => 'Co khuyen mai',
         isActive: () => true,
         isVisible: (filters) => filters.isPromotion,
         isRemovable: true,
@@ -45,7 +49,7 @@ const FILTER_LIST = [
             delete newFilters.isPromotion;
             return newFilters;
         },
-        onToggle: null,
+        onToggle: () => {},
     },
     {
         id: 3,
@@ -57,26 +61,65 @@ const FILTER_LIST = [
         isRemovable: true,
         onRemove: (filters) => {
             const newFilters = { ...filters };
-            delete newFilters.salePrice_lte;
             delete newFilters.salePrice_gte;
+            delete newFilters.salePrice_lte;
             return newFilters;
         },
-        onToggle: null,
+        onToggle: () => {},
+    },
+    {
+        id: 4,
+        getLabel: (filters) => {
+            switch (filters['category.id']) {
+                case 1: {
+                    return 'Thời trang';
+                    break;
+                }
+                case 2: {
+                    return 'Khẩu trang';
+                    break;
+                }
+                case 3: {
+                    return 'Làm đẹp';
+                    break;
+                }
+                case 4: {
+                    return 'Laptop';
+                    break;
+                }
+                case 5: {
+                    return 'Ổ cứng';
+                    break;
+                }
+                case 6: {
+                    return 'Điện thoại';
+                    break;
+                }
+                default: {
+                    return;
+                }
+            }
+        },
+        isActive: () => true,
+        isVisible: (filters) => filters['category.id'],
+        isRemovable: true,
+        onRemove: (filters) => {
+            const newFilters = { ...filters };
+            delete newFilters['category.id'];
+            return newFilters;
+        },
+        onToggle: () => {},
     },
 ];
-FilterViewer.propTypes = {
-    filters: PropTypes.object,
-    onchange: PropTypes.func,
-};
 
 function FilterViewer({ filters = {}, onChange = null }) {
     const classes = useStyles();
-    const visibleFilter = useMemo(() => {
+    const isVisibleFilters = useMemo(() => {
         return FILTER_LIST.filter((x) => x.isVisible(filters));
     }, [filters]);
     return (
         <Box component="ul" className={classes.root}>
-            {FILTER_LIST.filter((x) => x.isVisible(filters)).map((x) => (
+            {isVisibleFilters.map((x) => (
                 <li key={x.id}>
                     <Chip
                         label={x.getLabel(filters)}
@@ -87,17 +130,15 @@ function FilterViewer({ filters = {}, onChange = null }) {
                             x.isRemovable
                                 ? null
                                 : () => {
-                                      if (!onChange) return;
                                       const newFilters = x.onToggle(filters);
-                                      onChange(newFilters);
+                                      if (onChange) onChange(newFilters);
                                   }
                         }
                         onDelete={
                             x.isRemovable
                                 ? () => {
-                                      if (!onChange) return;
                                       const newFilters = x.onRemove(filters);
-                                      onChange(newFilters);
+                                      if (onChange) onChange(newFilters);
                                   }
                                 : null
                         }
